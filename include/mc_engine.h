@@ -139,7 +139,7 @@ public:
 		if(m != 1){
             for(size_t i = 0;i < n;++i){
 
-                up == Gaussian ? u = _rng->getXGaussian(m) : u = _rng->getXStudent(n,m);
+                u = _rng->getXGaussian(m);
 
                 Eigen::VectorXd w(A.rows());
                 mt == Cholesky ? w = u.transpose() * A : u.transpose() * A.transpose();
@@ -153,6 +153,34 @@ public:
 
 		return simRtns;
 	};
+
+	Mat DoMultiSimulationStudent(double n = 1.e+05,underlyingProcess up = Student, size_t dofreedom = 2){
+
+        std::shared_ptr<GenFromDistr<T>> _rng(new GenFromDistr<T>(innerGen));
+
+		Mat simRtns(A.rows(), Vec(n));
+
+		Eigen::VectorXd u(m);Eigen::VectorXd v(m);
+
+		// multiple asset case
+		if(m != 1){
+            for(size_t i = 0;i < n;++i){
+
+                u = _rng->getXStudent(m,dofreedom);
+
+                Eigen::VectorXd w(A.rows());
+                mt == Cholesky ? w = u.transpose() * A : u.transpose() * A.transpose();
+
+                for(unsigned int j = 0;j < A.rows();++j)
+                    simRtns[j][i] = paths_[j].doOneSim(w(j),  sigmastminus1[j], Returnstminus1[j][1], Returnstminus1[j][0]);
+
+            }
+		}
+		else cout << endl << "Needs at least two assets" << endl;
+
+		return simRtns;
+	};
+
 
 protected:
     matType mt;

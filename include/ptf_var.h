@@ -145,12 +145,24 @@ public:
         }
 
         _engine.setValues(rtns,sdevs);
+        
+        double n = 1.e+05;
+        underlyingProcess up = Student;
+        size_t dofreedom(ptf->getComponentReturns(0).size()-2);
+        Mat simRtns = _engine.DoMultiSimulationStudent(n,up,dofreedom);
 
-        Mat simRtns = _engine.DoMultiSimulation();
+        //double np = 1.e+05;
+        //underlyingProcess upg = Gaussian;
+        //Mat simRtns = _engine.DoMultiSimulation(np,upg);
+       
+        double historicalVaR = model(0,ptf->getReturns()); 
+        cout << "historicalVaR: " << historicalVaR << endl;
 
-        ptf->setReturns(simRtns); ptf->computeRtn(nbAssets);
+        ptf->setReturns(simRtns); ptf->OverwriteComponentPtfRtn(); ptf->computeRtn(nbAssets);
 
-        return model(0,ptf->getReturns());
+        double MCVaR = model(0,ptf->getReturns()); 
+
+        return MCVaR;
     };
 
 	//!compute VaR over whole path

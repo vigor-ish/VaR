@@ -53,7 +53,7 @@ int main()
     // daily series obtained from Yahoo! Finance through
 	//https://www.quandl.com
 
-	std::fstream file("/home/mrnoname/Documents/VaR/data/StockIndexData.csv", ios::in);
+	std::fstream file("/home/gg/Var_/test/data.csv", ios::in);
 	if(!file.is_open())
 	{
 		std::cout << "File not found!\n";
@@ -82,16 +82,16 @@ int main()
     size_t m(csvData[0].size() - 1);
 
     Mat _prices;
-    _prices.resize(m,Vec(n-1062));
+    _prices.resize(m,Vec(n));
 
-    for(size_t i = 1062;i < n;++i){
+    for(size_t i = 1;i < n+1;++i){
         for(size_t j = 1;j < csvData[i].size();++j){
             std::string tmp = csvData[i][j];
             if(tmp.empty()){
-                _prices[j-1][i-1062] = 99999.;
+                _prices[j-1][i-1] = 99999.;
             }
             else{
-                _prices[j-1][i-1062] = std::stod(tmp);
+                _prices[j-1][i-1] = std::stod(tmp);
             }
         }
     }
@@ -113,8 +113,8 @@ int main()
                 prices[i].push_back(_prices[i][j]);
         }
 	}
-
-    std::shared_ptr<ComputeReturn> cr(new ComputeReturn(prices,1,252,true));
+  unsigned int windowsize = prices[0].size()-2;
+  std::shared_ptr<ComputeReturn> cr(new ComputeReturn(prices,1,windowsize,true));
 	// 252 / 4 = 63 - 3 months
     // 4 * 252 = 1008 use 4 years of data to compute mean, and std dev
 
@@ -124,15 +124,16 @@ int main()
 
 	// Simulate stock rtn using AR(1)xGARCH(1,1) through brute force Monte-Carlo
 
-	std::vector<AR1xGARCH11> processes(7);
-
-    processes[0] = AR1xGARCH11(-0.0003114, -0.0693, 0.01854, 0.10150, 0.88374); // DJIA
-    processes[1] = AR1xGARCH11(-0.0003515,-0.0729,0.01979, 0.09502, 0.89028); // GSPC
-    processes[2] = AR1xGARCH11(-0.0004741,-0.1041,0.02788, 0.08605, 0.89754); // NDX
-    processes[3] = AR1xGARCH11(-1.37e-17, 0.,0.02614, 0.09003, 0.89950); // GDAXI
-    processes[4] = AR1xGARCH11(2.348e-17,0.,0.02476, 0.08731, 0.90240); // FCHI
-    processes[5] = AR1xGARCH11(2.468e-17,0.,0.02987, 0.07847, 0.91352); // SSEC
-    processes[6] = AR1xGARCH11(5.382e-18,0.,2.166e+00, 4.902e-01, 4.990e-15); // SENSEX
+	std::vector<AR1xGARCH11> processes(2);
+    processes[0] = AR1xGARCH11(); // DJIA
+    processes[1] = AR1xGARCH11(); // GSPC
+    //processes[0] = AR1xGARCH11(-0.0003114, -0.0693, 0.01854, 0.10150, 0.88374); // DJIA
+    //processes[1] = AR1xGARCH11(-0.0003515,-0.0729,0.01979, 0.09502, 0.89028); // GSPC
+    //processes[2] = AR1xGARCH11(-0.0004741,-0.1041,0.02788, 0.08605, 0.89754); // NDX
+    //processes[3] = AR1xGARCH11(-1.37e-17, 0.,0.02614, 0.09003, 0.89950); // GDAXI
+    //processes[4] = AR1xGARCH11(2.348e-17,0.,0.02476, 0.08731, 0.90240); // FCHI
+    //processes[5] = AR1xGARCH11(2.468e-17,0.,0.02987, 0.07847, 0.91352); // SSEC
+    //processes[6] = AR1xGARCH11(5.382e-18,0.,2.166e+00, 4.902e-01, 4.990e-15); // SENSEX
 
     Path1x1 process;
 
@@ -140,13 +141,13 @@ int main()
 
     // Case of full replication of index - DJIA,GSPC,NDX,GDAXI,FCHI,SSEC,SENSEX : 7 indices
 
-	double a = double(1./7.); 
+	double a = double(1./2.); 
 
-	std::vector<double> weights{a,a,a,a,a,a,a}; //initialization. Equi-weighted asset for mere convenience
+	std::vector<double> weights{a,a}; //initialization. Equi-weighted asset for mere convenience
 
 	Ptf _ptf;
 
-	for(unsigned int i = 0;i < 7;++i){
+	for(unsigned int i = 0;i < 2;++i){
         shared_ptr<Instrument> instrument(new DeltaOne());
         auto p = std::make_pair(i,instrument);
 		_ptf.push_back(p);
@@ -158,13 +159,15 @@ int main()
 
     VaRPtfMCCompute<HistoricalVaR, AR1xGARCH11> VaRMonteCarlo(ptf,var1, processes, _rng);
 
-	cout << "Monte Carlo VaR: " << VaRMonteCarlo.computeVaR() << endl;
+    double VaRout = VaRMonteCarlo.computeVaR();
+
+	cout << "Monte Carlo VaR: " << VaRout << endl;
 
 	//simulate portfolio rtn instead instead of component
 
-	VaRMonteCarloCompute<Portfolio, HistoricalVaR, Path1x1> VaRMonteCarlo1(ptf,var1, process, _rng);
+	//VaRMonteCarloCompute<Portfolio, HistoricalVaR, Path1x1> VaRMonteCarlo1(ptf,var1, process, _rng);
 
-	cout << "Monte Carlo VaR - ptf rtn: " << VaRMonteCarlo1.computeVaR() << endl;
+	//cout << "Monte Carlo VaR - ptf rtn: " << VaRMonteCarlo1.computeVaR() << endl;
 
 	// Compute whole path
 

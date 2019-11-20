@@ -60,6 +60,9 @@ public:
 
 	void setReturns(const Mat& _mAssetReturns);
 
+	void OverwriteComponentPtfRtn(){
+		ComponentPtfRtns = cr->getReturns();
+	}
 protected:
 
 	//! w' * R - Need to account for approx of asset return : delta, gamma, etc
