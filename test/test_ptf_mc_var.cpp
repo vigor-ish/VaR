@@ -53,7 +53,7 @@ int main()
     // daily series obtained from Yahoo! Finance through
 	//https://www.quandl.com
 
-	std::fstream file("/home/gg/Var_/test/data.csv", ios::in);
+	std::fstream file("data.csv", ios::in);
 	if(!file.is_open())
 	{
 		std::cout << "File not found!\n";
