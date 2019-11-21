@@ -97,7 +97,7 @@ double getOneStableDist(T& _rng_, double alpha, double beta, double gamma = 1., 
 	if(alpha != 1.){
 
         double tmp(cos(alpha * theta0 + (alpha - 1.)*theta)/W);
-        double sgn; std::ignbit(tmp) == 1 ? sgn = -1. : sgn = 1.;
+        double sgn; std::signbit(tmp) == 1 ? sgn = -1. : sgn = 1.;
 
 		Z = (sin(alpha*(theta0 + theta))/pow(cos(alpha* theta0)*cos(theta), 1./alpha)) *
 				sgn * pow(abs(tmp), (1. - alpha)/alpha);
