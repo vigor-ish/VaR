@@ -19,4 +19,4 @@ The computation have been backtested against several equity indices and foreign 
 
 The code is written in C++ and relies on Boost and Eigen libraries. It has been compiled using GNU compiler.
 
-g++ -g /home/gg/Var_/test/test_ptf_mc_var.cpp -o /home/gg/Var_/test/test_ptf_mc_var -I /home/gg/Var_/eigen-eigen-323c052e1731 -I /home/gg/Var_/include /home/gg/Var_/src/compute_returns_eigen.cpp /home/gg/Var_/src/instrument.cpp /home/gg/Var_/src/path.cpp /home/gg/Var_/src/pca.cpp /home/gg/Var_/src/portfolio.cpp /home/gg/Var_/src/ptf_var.cpp /home/gg/Var_/src/rng.cpp /home/gg/Var_/src/var_model.cpp
+g++ -g ./test/test_ptf_mc_var.cpp -o ./test/test_ptf_mc_var -I ./eigen-eigen-323c052e1731 -I ./include ./src/compute_returns_eigen.cpp ./src/instrument.cpp ./src/path.cpp ./src/pca.cpp ./src/portfolio.cpp ./src/ptf_var.cpp ./src/rng.cpp ./src/var_model.cpp
