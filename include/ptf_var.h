@@ -155,8 +155,8 @@ public:
         //underlyingProcess upg = Gaussian;
         //Mat simRtns = _engine.DoMultiSimulation(np,upg);
        
-        double historicalVaR = model(0,ptf->getReturns()); 
-        cout << "historicalVaR: " << historicalVaR << endl;
+     //   double historicalVaR = model(0,ptf->getReturns()); 
+      //  cout << "historicalCVaR: " << historicalVaR << endl;
 
         ptf->setReturns(simRtns); ptf->OverwriteComponentPtfRtn(); ptf->computeRtn(nbAssets);
 
