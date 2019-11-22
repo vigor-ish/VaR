@@ -138,7 +138,7 @@ int main()
    // CVaRMonteCarlo
    // Simulate crypto rtn using AR(1)xGARCH(1,1) through brute force Monte-Carlo
 	std::vector<AR1xGARCH11> processes(2);
-    processes[0] = AR1xGARCH11(); // first crypto asset
+    processes[0] = AR1xGARCH11(); // first crypto asset AR1xGARCH11( 0.,0.5,omega, alpha=.24, beta=.76); note beta, alpha, omega correspond to python arch_model
     processes[1] = AR1xGARCH11(); // 2nd crypto asset
     Path1x1 process;
     rng _rng;
